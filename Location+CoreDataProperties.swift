@@ -26,7 +26,7 @@ extension Location {
     func isEqualToCoreLocation(_ location : CLLocation) -> Bool{
         var isEqual : Bool = false
         
-        if(location.coordinate.latitude == self.latitude && location.coordinate.longitude == self.longitude && location.timestamp.timeIntervalSince(self.collectedTime as! Date) <= 10) {
+        if(location.distance(from: CLLocation(latitude: latitude, longitude: longitude)) < 100) {
             isEqual = true
         }
         

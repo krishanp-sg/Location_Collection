@@ -23,7 +23,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             if launchOptions[UIApplicationLaunchOptionsKey.location] != nil {
             
                 let locationManger = LocationManager.sharedManager
-                locationManger.stopSignificantLocationUpdate()
                 locationManger.startLocationUpdate()
                 locationManger.appMovedToBackground()
                 

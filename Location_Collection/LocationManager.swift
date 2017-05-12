@@ -11,13 +11,18 @@ import CoreLocation
 
 class LocationManager: NSObject, CLLocationManagerDelegate {
     
-   static let  sharedManager = LocationManager()
+   private static let REGION_IDENTIFIER = "IDLERegion"
+   private static let REGION_RADIUS = 100.0
+    
+    static let  sharedManager = LocationManager()
+    
     let distanceFiter = 50.0
     
     fileprivate var locaitonManager : CLLocationManager = CLLocationManager()
     fileprivate var locationShareModel = LocationShareModel()
     fileprivate var isAppInBackground : Bool = false
     fileprivate var isSignificantLocationUpdate : Bool = false
+    fileprivate var regionToMonitor : CLRegion?
     
     required override init() {
         super.init()
@@ -38,10 +43,16 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
     func startLocationUpdate() {
         isSignificantLocationUpdate = false
         setupLocationManager()
+        startLocationManager()
     }
     
     func startLocationManager(){
-        self.locaitonManager.startUpdatingLocation()
+        
+        if CLLocationManager.authorizationStatus() == .notDetermined {
+            self.locaitonManager.requestAlwaysAuthorization()
+        }else if CLLocationManager.authorizationStatus() == .authorizedAlways {
+            self.locaitonManager.startUpdatingLocation()
+        }
     }
     
     
@@ -50,18 +61,6 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
         self.locaitonManager.distanceFilter = distanceFiter
         self.locaitonManager.delegate = self
         self.locaitonManager.allowsBackgroundLocationUpdates = true;
-        
-        if CLLocationManager.locationServicesEnabled() {
-            
-            if CLLocationManager.authorizationStatus() == .authorizedAlways {
-              startLocationManager()
-            } else {
-                 self.locaitonManager.requestAlwaysAuthorization()
-            }
-            
-        } else {
-           
-        }
     }
     
     
@@ -89,7 +88,7 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
         }
         
         self.locaitonManager.stopUpdatingLocation()
-        setupLocationManager()
+        startLocationManager()
     }
     
     // Request location update will fire only once
@@ -157,6 +156,10 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
             stopSignificantLocationUpdate()
         }
         
+        if let region = regionToMonitor {
+            self.locaitonManager.stopMonitoring(for: region)
+        }
+        
         self.locaitonManager.stopUpdatingLocation()
         startLocationUpdate()
     }
@@ -168,6 +171,33 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
         self.locaitonManager.stopUpdatingLocation()
         
         startSignificantChangeLocationUpdates()
+        
+    }
+    
+    func setupRegionToMonitor(_ iDleLocation : CLLocation){
+        
+        print("Setting Up Region Monitor")
+        
+        if self.locationShareModel.backgroundTimer != nil {
+            self.locationShareModel.backgroundTimer?.invalidate()
+            self.locationShareModel.backgroundTimer = nil
+        }
+        
+        if self.locationShareModel.stopLocationManagerAfter10sTimer != nil {
+            self.locationShareModel.backgroundTimer?.invalidate()
+            self.locationShareModel.backgroundTimer = nil
+        }
+        
+        isSignificantLocationUpdate = false
+        isAppInBackground = true
+        
+        if CLLocationManager.isMonitoringAvailable(for: CLCircularRegion.self) {
+            
+            
+            regionToMonitor = CLCircularRegion(center: iDleLocation.coordinate, radius: LocationManager.REGION_RADIUS, identifier: LocationManager.REGION_IDENTIFIER)
+            self.locaitonManager.startMonitoring(for: regionToMonitor!)
+        }
+        
         
     }
     
@@ -203,7 +233,7 @@ extension LocationManager {
         print("Location Updated")
         
         // If the user is IDLE for 5 minutes turn off the location and Start Significant location update. 
-        if let lastUserLocation = LocationDataAccess.getLastInsertedUserLocation() {
+        if let lastUserLocation = LocationDataAccess.getLastInsertedUserLocation(), isAppInBackground {
             
             let lastLocation : CLLocation = CLLocation(latitude: lastUserLocation.latitude, longitude: lastUserLocation.longitude)
             
@@ -212,12 +242,14 @@ extension LocationManager {
             if locations.last!.distance(from: lastLocation) < 100 && locations.last!.timestamp.timeIntervalSince(lastUserLocation.collectedTime as! Date) > 300 {
                 
                 stopLocationManagerAfter10s()
-                startSignificantChangeLocationUpdates()
+//                startSignificantChangeLocationUpdates()
+                
+                setupRegionToMonitor(locations.last!)
                 
                 return
             }
         
-        }
+        } 
         
         LocationDataAccess.insertLocationToDataBase(userLocation: locations.last!)
         
@@ -246,6 +278,21 @@ extension LocationManager {
             
 
         }
+        
+    }
+    
+    
+    func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
+        print("User Entered In to The region")
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
+        print("User Left The Region")
+        // TODO : User have exits the idle position. Stop monitoring region and remove the existing regions. and start location update.
+        
+        self.locaitonManager.stopMonitoring(for: regionToMonitor!)
+        self.startLocationUpdate()
+        self.appMovedToBackground()
         
     }
 }

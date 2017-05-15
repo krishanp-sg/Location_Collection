@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "662AF8F898AB09542C917126E8B301BCDF350DDB",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "662AF8F898AB09542C917126E8B301BCDF350DDB" : 9223372036854775807,
+    "D1EEEA3EA3AE1630953BC7F7D966EBE5F65997F9" : 9223372036854775807
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "928ED268-B4BE-4A50-86BC-F1B00EE9F64D",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "662AF8F898AB09542C917126E8B301BCDF350DDB" : "Location_Collection\/",
+    "D1EEEA3EA3AE1630953BC7F7D966EBE5F65997F9" : ""
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "Location_Collection",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "Location_Collection.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/krishanp-sg\/Location_Collection.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "662AF8F898AB09542C917126E8B301BCDF350DDB"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/krishanp-sg\/PixErf-Insta-Assignment.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "D1EEEA3EA3AE1630953BC7F7D966EBE5F65997F9"
+    }
+  ]
+}

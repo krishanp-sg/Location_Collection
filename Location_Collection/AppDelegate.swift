@@ -21,7 +21,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if let launchOptions = launchOptions {
             // This is because of Significant location update
             if launchOptions[UIApplicationLaunchOptionsKey.location] != nil {
-            
+                
+                debugPrint("Applicaiton Launched because of GeoFencing")
                 let locationManger = LocationManager.sharedManager
                 locationManger.startLocationUpdate()
                 locationManger.appMovedToBackground()
@@ -55,7 +56,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationWillTerminate(_ application: UIApplication) {
         
-//        LocationManager.sharedManager.appWillTerminate()
+        LocationManager.sharedManager.appWillTerminate()
         
         self.saveContext()
     }
